@@ -1,0 +1,57 @@
+edition: 1.0.0
+name: prest-app
+access: "default" #  秘钥别名
+
+vars: # 全局变量
+  region: "cn-hangzhou"
+
+services:
+  alphascape:
+    component: fc
+    actions:
+      pre-deploy:
+        - run: go env -w GOPROXY=https://goproxy.cn,direct
+          path: ./code
+        - run: go mod download
+          path: ./code/prest
+        - run: GO111MODULE=on GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ../prestd cmd/prestd/main.go
+          path: ./code/prest
+      # post-deploy:
+      #   - run: rm -rf target
+      #     path: ./code
+    props: # 组件的属性值
+      region: ${vars.region} # 关于变量的使用方法，可以参考：https://www.serverless-devs.com/serverless-devs/yaml#变量赋值
+      service:
+        name: "prest-service"
+        description: "pREST Service"
+      function:
+        name: "prest-function"
+        description: 'pREST Function'
+        codeUri: './code'
+        caPort: 8080
+        customRuntimeConfig:
+          command:
+            - ./prestd
+        environmentVariables: {}
+        handler: index.handler
+        instanceConcurrency: 20
+        instanceType: e1
+        memorySize: 512
+        runtime: custom
+        timeout: 30
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+      customDomains:
+        - domainName: auto
+          protocol: HTTP
+          routeConfigs:
+            - path: /*
+              methods:
+                - GET
+                - POST
