@@ -6,7 +6,7 @@ vars: # 全局变量
   region: "cn-hangzhou"
 
 services:
-  alphascape:
+  prest-service:
     component: fc
     actions:
       pre-deploy:
