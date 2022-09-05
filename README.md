@@ -10,9 +10,10 @@ prest-serverless 是一个帮助你快速发布 [pREST](https://github.com/prest
 ```bash
 # 首先克隆本仓库
 git clone git@github.com:nangcr/prest-serverless.git
-# 在本仓库根目录下的 code 目录中克隆 prest 仓库
-cd prest-serverless/code
-git clone --depth=1 git@github.com:prest/prest.git
+# 在本仓库根目录下的 code 拉取子模块prest代码
+cd prest-serverless/code/prest
+git submodule init
+git submodule update 
 # 修改 code 目录中配置文件
 vim prest.toml
 # 回到本仓库根目录并使用安装好的 Serverless Devs Cli 工具发布服务
